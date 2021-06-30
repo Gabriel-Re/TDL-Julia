@@ -4,6 +4,8 @@
 
 ### Grupo: Teoría de los pi
 
+<img src="https://github.com/Gabriel-Re/TDL-Julia/blob/main/Logo/Logo%20teoria%20de%20los%20pi.jpg?raw=true">
+
 ### Integrantes
 
 * **Marcos Vargas** - [GitHub](https://github.com/marcosldvargas)
