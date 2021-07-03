@@ -543,11 +543,16 @@ end
 # ╔═╡ 9a6b9518-c9ec-4f06-98c2-bf01d6e20b80
 md"
 
-## Pruebas
+## Plots animados
 
 "
 
-# ╔═╡ 9f5ad493-03f3-4fc6-9175-0ebb2b29d558
+# ╔═╡ 5789f6e7-0ceb-4b32-894a-fa1efa8b4043
+md"
+Mostramos lo que se puede lograr simplemente codeando pequeñas lineas de código
+"
+
+# ╔═╡ b3d67726-2eb3-4188-8458-f68cd5dc5744
 begin
 	gr() 
 	p = plot([sin, cos], zeros(0), leg = false)
@@ -557,6 +562,56 @@ begin
 	    frame(anim)
 	end
 	gif(anim, "sen_cos_tdl.gif", fps = 15)
+end
+
+# ╔═╡ 4fcb3eb8-1c0e-4d93-97d4-9cbc5dbfdcc1
+begin
+	#@userplot CirclePlot
+	@recipe function f(cp::CirclePlot)
+	    x, y, i = cp.args
+	    n = length(x)
+	    inds = circshift(1:n, 1 - i)
+	    linewidth --> range(0, 10, length = n)
+	    seriesalpha --> range(0, 1, length = n)
+	    aspect_ratio --> 1
+	    label --> false
+	    x[inds], y[inds]
+	end
+	
+	n = 150
+	t = range(0, 2π, length = n)
+	x = sin.(t)
+	y = cos.(t)
+
+	anim2 = @animate for i ∈ 1:n
+		circleplot(x, y, i)
+	end
+	gif(anim2, "anim2_fps15.gif", fps = 30)
+end
+
+# ╔═╡ eac45039-d95f-43d5-a8aa-608cc88139a4
+md"
+Use **@gif** for simple, one-off animations that you want to view immediately. 
+Use **@animate** for anything more complex. Constructing Animation objects can be done when you need full control of the life-cycle of the animation (usually unnecessary though).
+
+"
+
+# ╔═╡ 0e6fde21-edb0-4477-ae57-503526399ac1
+begin
+	@gif for i ∈ 1:n
+    circleplot(x, y, i, line_z = 1:n, cbar = false, framestyle = :zerolines)
+	end every 5
+end
+
+# ╔═╡ a638cf30-0d88-43b2-94a7-ebe242419b49
+begin
+	nn = 100
+	tt = range(0, 2π, length = nn)
+	xx = 16sin.(tt).^3
+	yy = 13cos.(tt) .- 5cos.(2tt) .- 2cos.(3tt) .- cos.(4tt)
+	@gif for i ∈ 1:n
+		circleplot(xx, yy, i, line_z = 1:nn, cbar = false, c = :reds, framestyle = :none)
+	end when i > 40 && mod1(i, 10) == 5
 end
 
 # ╔═╡ Cell order:
@@ -608,9 +663,9 @@ end
 # ╟─cd019c4d-2c61-4650-9377-4b8f0740ad82
 # ╟─732bcb6f-7e3c-4a3d-bc5e-7e75b41c2d50
 # ╟─d35d2d40-6d08-4320-aba9-8c3f8f3f28df
-# ╠═a38d5f8d-f185-4539-98f3-1c189d436c86
+# ╟─a38d5f8d-f185-4539-98f3-1c189d436c86
 # ╟─ea134f4e-17b2-41c6-afed-fa59a4ed9d2f
-# ╠═ebb9352c-ddc8-4d15-a53c-f8606c2dd143
+# ╟─ebb9352c-ddc8-4d15-a53c-f8606c2dd143
 # ╠═58bbdf98-ba67-481c-a43f-b31871c30446
 # ╟─af4e5084-a324-4b21-a5e4-3bfd9a60d785
 # ╟─043aa580-fb73-4e99-b8e3-e2adc0c9f130
@@ -637,4 +692,9 @@ end
 # ╠═8eea3ace-094c-4335-930e-d3912c6c5e47
 # ╟─17e7439e-dce0-4189-b0bd-f1817d1295d8
 # ╟─9a6b9518-c9ec-4f06-98c2-bf01d6e20b80
-# ╠═9f5ad493-03f3-4fc6-9175-0ebb2b29d558
+# ╟─5789f6e7-0ceb-4b32-894a-fa1efa8b4043
+# ╠═b3d67726-2eb3-4188-8458-f68cd5dc5744
+# ╠═4fcb3eb8-1c0e-4d93-97d4-9cbc5dbfdcc1
+# ╟─eac45039-d95f-43d5-a8aa-608cc88139a4
+# ╠═0e6fde21-edb0-4477-ae57-503526399ac1
+# ╠═a638cf30-0d88-43b2-94a7-ebe242419b49
