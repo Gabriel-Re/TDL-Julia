@@ -523,7 +523,7 @@ begin
 	plot!(x_2, f_2.(x_2,50), xticks = ([-π:π:π;], ["-\\pi","0","\\pi"]), label = "N = 50");
 	plot_general_2 = plot!(x_2, f_2.(x_2,500), xticks = ([-π:π:π;], ["-\\pi","0","\\pi"]), label = "N = 500");
 	gr(size = (700, 650))
-	display(plot_general_2)
+	plot_general_2
 end
 
 # ╔═╡ 8eea3ace-094c-4335-930e-d3912c6c5e47
@@ -566,7 +566,7 @@ end
 
 # ╔═╡ 4fcb3eb8-1c0e-4d93-97d4-9cbc5dbfdcc1
 begin
-	#@userplot CirclePlot
+	@userplot CirclePlot
 	@recipe function f(cp::CirclePlot)
 	    x, y, i = cp.args
 	    n = length(x)
