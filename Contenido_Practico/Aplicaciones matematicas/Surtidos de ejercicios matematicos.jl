@@ -614,6 +614,43 @@ begin
 	end when i > 40 && mod1(i, 10) == 5
 end
 
+# ╔═╡ 6a6aa62c-67e5-4b84-a53a-20c22835999e
+md"
+## Concurrencia
+
+Links:
+
+https://docs.julialang.org/en/v1/manual/multi-threading/
+https://docs.julialang.org/en/v1/manual/distributed-computing/
+https://docs.julialang.org/en/v1/stdlib/Distributed/#Distributed-Computing
+
+"
+
+# ╔═╡ ba8dc280-af56-454f-bdab-584e5eb3a217
+md"
+Julia empieza con un solo hilo de ejecución
+"
+
+# ╔═╡ 252fac58-0db3-4ab5-a424-6d05bda4ab3f
+Threads.nthreads()
+
+# ╔═╡ 9efcca26-6b12-451c-b544-941c8990ff97
+Threads.threadid()
+
+# ╔═╡ 51a35185-568a-41eb-ab65-8829d41c5bd7
+md"
+
+Para establecer la cantidad de threads con los queremos trabajar deben ser seteados antes de iniciar Julia
+
+![Nota de threads antes de iniciar Julia](https://i.imgur.com/q6LLdrZ.png)
+"
+
+# ╔═╡ 2e85a4f6-faff-44c8-8546-eb8576b1b2c7
+#set JULIA_NUM_THREADS=4
+
+# ╔═╡ 444e2a32-b51e-4c95-b24f-1f2d82a89a6f
+#$env:JULIA_NUM_THREADS=4
+
 # ╔═╡ Cell order:
 # ╟─d73c1b30-d6b4-11eb-2696-bfc007431ade
 # ╟─9f31022d-1f76-462b-9932-daf6c7fefb78
@@ -698,3 +735,10 @@ end
 # ╟─eac45039-d95f-43d5-a8aa-608cc88139a4
 # ╠═0e6fde21-edb0-4477-ae57-503526399ac1
 # ╠═a638cf30-0d88-43b2-94a7-ebe242419b49
+# ╟─6a6aa62c-67e5-4b84-a53a-20c22835999e
+# ╟─ba8dc280-af56-454f-bdab-584e5eb3a217
+# ╠═252fac58-0db3-4ab5-a424-6d05bda4ab3f
+# ╠═9efcca26-6b12-451c-b544-941c8990ff97
+# ╟─51a35185-568a-41eb-ab65-8829d41c5bd7
+# ╠═2e85a4f6-faff-44c8-8546-eb8576b1b2c7
+# ╠═444e2a32-b51e-4c95-b24f-1f2d82a89a6f
