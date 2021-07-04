@@ -7,6 +7,12 @@ using InteractiveUtils
 # ╔═╡ cde43e53-02c4-46cf-a0a4-29ed8339d07f
 import Pkg
 
+# ╔═╡ e1bb5188-f9e1-4f5d-bfa4-1b8ce59fc362
+Pkg.add("Images")
+
+# ╔═╡ 00d07b70-c4a0-4d90-9c50-9960d228e5cc
+Pkg.add("TestImages")
+
 # ╔═╡ 4830f653-235a-4734-bee9-6a46734e44f0
 Pkg.add("GR")
 
@@ -21,6 +27,9 @@ Pkg.add("PyPlot")
 
 # ╔═╡ b2fd891b-591e-44f5-b4bc-bbdf7e84c6b0
 using LinearAlgebra
+
+# ╔═╡ e592d078-35e1-4f92-8a43-060a6629022e
+using Images, TestImages
 
 # ╔═╡ 31e7a4c1-4234-4a09-b44f-3532a8fe55ad
 using Plots
@@ -272,8 +281,48 @@ http://timbaumann.info/svd-image-compression-demo/
 
 "
 
-# ╔═╡ cd019c4d-2c61-4650-9377-4b8f0740ad82
+# ╔═╡ 969a4269-27f7-49e1-98d3-32184102cd60
+md"
 
+##### Cómo hacer una SVD de una imagen en Julia
+
+"
+
+# ╔═╡ 95494d3c-2f50-4d27-a00b-d44537494ff7
+md"
+
+Para mostrar un ejemplo vamos a usar una imagen de la biblioteca **Images**
+de Julia:
+"
+
+# ╔═╡ c8bc19aa-b02b-473c-9af8-51d50e851068
+begin
+    img = testimage("chelsea")
+    channels = channelview(img)
+
+    function rank_approx(F::SVD, k)
+        U, S, V = F
+        M = U[:, 1:k] * Diagonal(S[1:k]) * V[:, 1:k]'
+        clamp01!(M)
+    end
+end
+
+# ╔═╡ cd019c4d-2c61-4650-9377-4b8f0740ad82
+begin
+    svdfactors = svd.(eachslice(channels; dims=1))
+    imgs = map((6,15,23, 100)) do k #variando estos 3 valores cambia la resolucion
+        colorview(RGB, rank_approx.(svdfactors, k)...)
+    end
+
+    mosaicview(imgs...; nrow=4, npad=5)
+end
+
+# ╔═╡ a126d9c3-598c-4688-a8ea-3f8efbbf1843
+md"
+
+Se puede observar que con diferentes valores para **k** modificamos la dimension de las matrices de la svd. En la primera imagen $k = 6$, la segunda $k=15$, la tercera $k=23$ y en la ultima $k=100$. Así como se pudo trabajar con esta imagen también será posible hacerlo con cualquier otra.
+
+"
 
 # ╔═╡ 732bcb6f-7e3c-4a3d-bc5e-7e75b41c2d50
 md"
@@ -697,7 +746,14 @@ Para establecer la cantidad de threads con los queremos trabajar deben ser setea
 # ╠═3d386d59-5a67-4b31-b550-8355c3940919
 # ╠═c65fc986-31f4-4756-8688-d7fba7665c7b
 # ╟─67847137-8a7b-4257-84f9-2843c78dbb7c
-# ╟─cd019c4d-2c61-4650-9377-4b8f0740ad82
+# ╟─969a4269-27f7-49e1-98d3-32184102cd60
+# ╟─95494d3c-2f50-4d27-a00b-d44537494ff7
+# ╠═e1bb5188-f9e1-4f5d-bfa4-1b8ce59fc362
+# ╠═00d07b70-c4a0-4d90-9c50-9960d228e5cc
+# ╠═e592d078-35e1-4f92-8a43-060a6629022e
+# ╠═c8bc19aa-b02b-473c-9af8-51d50e851068
+# ╠═cd019c4d-2c61-4650-9377-4b8f0740ad82
+# ╠═a126d9c3-598c-4688-a8ea-3f8efbbf1843
 # ╟─732bcb6f-7e3c-4a3d-bc5e-7e75b41c2d50
 # ╟─d35d2d40-6d08-4320-aba9-8c3f8f3f28df
 # ╟─a38d5f8d-f185-4539-98f3-1c189d436c86
