@@ -4,13 +4,22 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : missing
+        el
+    end
+end
+
 # ╔═╡ cde43e53-02c4-46cf-a0a4-29ed8339d07f
 import Pkg
 
-# ╔═╡ e1bb5188-f9e1-4f5d-bfa4-1b8ce59fc362
+# ╔═╡ 6a865c6d-a390-49d2-a12d-719b0a69bb31
 Pkg.add("Images")
 
-# ╔═╡ 00d07b70-c4a0-4d90-9c50-9960d228e5cc
+# ╔═╡ a8b75810-4e36-41a4-9e90-469136dc21ce
 Pkg.add("TestImages")
 
 # ╔═╡ 4830f653-235a-4734-bee9-6a46734e44f0
@@ -28,7 +37,7 @@ Pkg.add("PyPlot")
 # ╔═╡ b2fd891b-591e-44f5-b4bc-bbdf7e84c6b0
 using LinearAlgebra
 
-# ╔═╡ e592d078-35e1-4f92-8a43-060a6629022e
+# ╔═╡ 6cd017a5-dc84-4128-9902-dbd37a9156d6
 using Images, TestImages
 
 # ╔═╡ 31e7a4c1-4234-4a09-b44f-3532a8fe55ad
@@ -295,34 +304,68 @@ Para mostrar un ejemplo vamos a usar una imagen de la biblioteca **Images**
 de Julia:
 "
 
-# ╔═╡ c8bc19aa-b02b-473c-9af8-51d50e851068
-begin
-    img = testimage("chelsea")
-    channels = channelview(img)
-
-    function rank_approx(F::SVD, k)
-        U, S, V = F
-        M = U[:, 1:k] * Diagonal(S[1:k]) * V[:, 1:k]'
-        clamp01!(M)
-    end
-end
-
-# ╔═╡ cd019c4d-2c61-4650-9377-4b8f0740ad82
-begin
-    svdfactors = svd.(eachslice(channels; dims=1))
-    imgs = map((6,15,23, 100)) do k #variando estos 3 valores cambia la resolucion
-        colorview(RGB, rank_approx.(svdfactors, k)...)
-    end
-
-    mosaicview(imgs...; nrow=4, npad=5)
-end
-
-# ╔═╡ a126d9c3-598c-4688-a8ea-3f8efbbf1843
+# ╔═╡ 0af7ea73-e28f-45dd-a269-74c6cb3cb017
 md"
 
-Se puede observar que con diferentes valores para **k** modificamos la dimension de las matrices de la svd. En la primera imagen $k = 6$, la segunda $k=15$, la tercera $k=23$ y en la ultima $k=100$. Así como se pudo trabajar con esta imagen también será posible hacerlo con cualquier otra.
+Elegimos la primer imagen que se nos viene a la cabeza
+
 
 "
+
+# ╔═╡ fa322555-88ec-4780-99e0-f701c234b131
+	comandante = mktemp() do fn,f
+   	download("https://i1.wp.com/cinefilosoficial.com/wp-content/uploads/2020/12/ricky.jpg?fit=920%2C517&ssl=1", fn)
+    load(fn)
+	end
+
+# ╔═╡ 8def7f9c-ea93-4102-9444-95de14f9c884
+md"
+
+En este ejemplo mostramos como se puede realizar una descomposición en valores singulares a una imagen y, dependiendo del valor que le demos a **k**, comprimir más o menos la misma.
+
+
+"
+
+# ╔═╡ 777f0003-eb3d-476c-b4c0-3bfeec03b97a
+md"
+
+Para variar el valor de **k** usamos el siguiente controlador:
+
+"
+
+# ╔═╡ 777185ba-cace-47e3-8f69-f7250c5354a2
+@bind valor_k html"<input type=range>"
+
+# ╔═╡ 992f9055-9535-4413-a088-63070ffeedb3
+md"
+El valor de **k** es:
+
+"
+
+# ╔═╡ 19b329e2-99eb-4b5a-95c2-0c9793e5b084
+valor_k
+
+# ╔═╡ acf14a7b-1d6c-46fd-b5ee-84324e0d38b9
+begin
+	img = comandante
+	channels = channelview(img)
+	
+	function rank_approx(F::SVD, k)
+		U, S, V = F
+		M = U[:, 1:k] * Diagonal(S[1:k]) * V[:, 1:k]'
+		clamp01!(M)
+	end
+	
+	svdfactors = svd.(eachslice(channels; dims=1))
+	imgs = map((valor_k, 100)) do k
+	   colorview(RGB, rank_approx.(svdfactors, k)...)
+	end
+	
+	mosaicview(imgs[1]; nrow=1, npad=5)	
+end
+
+# ╔═╡ 9e3675df-f461-46e9-bc37-b2b039af0314
+
 
 # ╔═╡ 732bcb6f-7e3c-4a3d-bc5e-7e75b41c2d50
 md"
@@ -748,12 +791,18 @@ Para establecer la cantidad de threads con los queremos trabajar deben ser setea
 # ╟─67847137-8a7b-4257-84f9-2843c78dbb7c
 # ╟─969a4269-27f7-49e1-98d3-32184102cd60
 # ╟─95494d3c-2f50-4d27-a00b-d44537494ff7
-# ╠═e1bb5188-f9e1-4f5d-bfa4-1b8ce59fc362
-# ╠═00d07b70-c4a0-4d90-9c50-9960d228e5cc
-# ╠═e592d078-35e1-4f92-8a43-060a6629022e
-# ╠═c8bc19aa-b02b-473c-9af8-51d50e851068
-# ╠═cd019c4d-2c61-4650-9377-4b8f0740ad82
-# ╠═a126d9c3-598c-4688-a8ea-3f8efbbf1843
+# ╠═6a865c6d-a390-49d2-a12d-719b0a69bb31
+# ╠═a8b75810-4e36-41a4-9e90-469136dc21ce
+# ╠═6cd017a5-dc84-4128-9902-dbd37a9156d6
+# ╟─0af7ea73-e28f-45dd-a269-74c6cb3cb017
+# ╟─fa322555-88ec-4780-99e0-f701c234b131
+# ╟─8def7f9c-ea93-4102-9444-95de14f9c884
+# ╟─777f0003-eb3d-476c-b4c0-3bfeec03b97a
+# ╟─777185ba-cace-47e3-8f69-f7250c5354a2
+# ╟─992f9055-9535-4413-a088-63070ffeedb3
+# ╟─19b329e2-99eb-4b5a-95c2-0c9793e5b084
+# ╟─acf14a7b-1d6c-46fd-b5ee-84324e0d38b9
+# ╟─9e3675df-f461-46e9-bc37-b2b039af0314
 # ╟─732bcb6f-7e3c-4a3d-bc5e-7e75b41c2d50
 # ╟─d35d2d40-6d08-4320-aba9-8c3f8f3f28df
 # ╟─a38d5f8d-f185-4539-98f3-1c189d436c86
