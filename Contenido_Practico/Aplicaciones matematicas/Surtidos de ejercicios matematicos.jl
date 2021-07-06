@@ -43,6 +43,9 @@ using Images, TestImages
 # ╔═╡ 31e7a4c1-4234-4a09-b44f-3532a8fe55ad
 using Plots
 
+# ╔═╡ 5e20bfe3-7e47-4b2c-b549-671d01629abc
+using PyPlot
+
 # ╔═╡ d73c1b30-d6b4-11eb-2696-bfc007431ade
 md"""
 # Matemática con Julia
@@ -509,9 +512,6 @@ No vamos a entrar más a fondo porque no es la idea. Vamos a mostrar como se pue
 
 """
 
-# ╔═╡ 27ab170c-b500-4346-a98a-ece6812edf80
-
-
 # ╔═╡ 7da7048b-5e8b-4bdf-b3e0-a4610935a3ce
 md"
 
@@ -706,6 +706,73 @@ begin
 	end when i > 40 && mod1(i, 10) == 5
 end
 
+# ╔═╡ 9faeb00d-f9eb-4de9-9408-48c1b17db90a
+begin
+	ϕs = range(-π, π, length = 50)
+	θs = range(0, π, length = 25)
+	θqs = range(1, π - 1, length = 25)
+	x_3 = vec([sin(θ) * cos(ϕ) for (ϕ, θ) = Iterators.product(ϕs, θs)])
+	y_3 = vec([sin(θ) * sin(ϕ) for (ϕ, θ) = Iterators.product(ϕs, θs)])
+	z_3 = vec([cos(θ) for (ϕ, θ) = Iterators.product(ϕs, θs)])
+	u_3 = 0.1 * vec([sin(θ) * cos(ϕ) for (ϕ, θ) = Iterators.product(ϕs, θqs)])
+	v_3 = 0.1 * vec([sin(θ) * sin(ϕ) for (ϕ, θ) = Iterators.product(ϕs, θqs)])
+	w_3 = 0.1 * vec([cos(θ) for (ϕ, θ) = Iterators.product(ϕs, θqs)])
+	quiver(x_3, y_3, z_3, quiver = (u_3, v_3, w_3))
+end
+
+# ╔═╡ a15c6358-6eef-4167-a150-f7f8d8753f70
+begin
+	f(x, a) = begin
+			1 / x + a * x ^ 2
+		end
+	xs = collect(0.1:0.05:2.0)
+	as = collect(0.2:0.1:2.0)
+	x_grid = [x for x = xs for y = as]
+	a_grid = [y for x = xs for y = as]
+	plot(x_grid, a_grid, f.(x_grid, a_grid), st = :surface, xlabel = "longer xlabel", ylabel = "longer ylabel", zlabel = "longer zlabel")
+end
+
+# ╔═╡ 9cbdd65f-9593-4426-996e-fa8427a8439f
+begin
+	Base.@kwdef mutable struct Lorenz
+		dt::Float64 = 0.02
+		σ::Float64 = 10
+		ρ::Float64 = 28
+		β::Float64 = 8/3
+		x::Float64 = 1
+		y::Float64 = 1
+		z::Float64 = 1
+	end
+
+	function step!(l::Lorenz)
+		dx = l.σ * (l.y - l.x)
+		dy = l.x * (l.ρ - l.z) - l.y
+		dz = l.x * l.y - l.β * l.z
+		l.x += l.dt * dx
+		l.y += l.dt * dy
+		l.z += l.dt * dz
+	end
+
+	attractor = Lorenz()
+
+
+	# initialize a 3D plot with 1 empty series
+	plt = plot3d(
+		1,
+		xlim = (-30, 30),
+		ylim = (-30, 30),
+		zlim = (0, 60),
+		title = "Lorenz Attractor",
+		marker = 2,
+	)
+
+	# build an animated gif by pushing new points to the plot, saving every 10th frame
+	@gif for i=1:1500
+		step!(attractor)
+		push!(plt, attractor.x, attractor.y, attractor.z)
+	end every 10
+end
+
 # ╔═╡ 6a6aa62c-67e5-4b84-a53a-20c22835999e
 md"
 ## Concurrencia
@@ -720,11 +787,16 @@ https://docs.julialang.org/en/v1/stdlib/Distributed/#Distributed-Computing
 
 # ╔═╡ ba8dc280-af56-454f-bdab-584e5eb3a217
 md"
-Julia empieza con un solo hilo de ejecución
+**Julia empieza con un solo hilo de ejecución**
 "
 
 # ╔═╡ 252fac58-0db3-4ab5-a424-6d05bda4ab3f
 Threads.nthreads()
+
+# ╔═╡ 33aa5024-bf95-4301-89ab-da943a17acf4
+md"
+Actualmente estamos en el hilo principal
+"
 
 # ╔═╡ 9efcca26-6b12-451c-b544-941c8990ff97
 Threads.threadid()
@@ -742,6 +814,9 @@ Para establecer la cantidad de threads con los queremos trabajar deben ser setea
 
 # ╔═╡ 444e2a32-b51e-4c95-b24f-1f2d82a89a6f
 #$env:JULIA_NUM_THREADS=4
+
+# ╔═╡ 3804212c-5fc6-4019-a9d1-c50bb6a44553
+import Distributed
 
 # ╔═╡ Cell order:
 # ╟─d73c1b30-d6b4-11eb-2696-bfc007431ade
@@ -814,7 +889,6 @@ Para establecer la cantidad de threads con los queremos trabajar deben ser setea
 # ╟─e6e4df37-6e5a-4252-8c13-4abb83714aab
 # ╟─95bbcbe7-da5f-47e9-8e1c-c08886cb2a5c
 # ╟─6712942a-a642-4c9d-aa8d-f6b02b3ef55f
-# ╟─27ab170c-b500-4346-a98a-ece6812edf80
 # ╟─7da7048b-5e8b-4bdf-b3e0-a4610935a3ce
 # ╟─75574783-8c9e-4203-96b6-6304f136283a
 # ╠═cde43e53-02c4-46cf-a0a4-29ed8339d07f
@@ -823,6 +897,7 @@ Para establecer la cantidad de threads con los queremos trabajar deben ser setea
 # ╠═23405876-e42c-41e3-95e7-0b0acd1d4a1b
 # ╠═b883a567-4645-472f-b191-c44be8791390
 # ╠═31e7a4c1-4234-4a09-b44f-3532a8fe55ad
+# ╠═5e20bfe3-7e47-4b2c-b549-671d01629abc
 # ╟─e670921c-12b4-4709-99b4-5e02cafaa594
 # ╟─1ccd4f43-23b8-4256-96f8-775a4f7d30c4
 # ╠═b756f72a-fc27-4490-b979-8e1214691875
@@ -840,10 +915,15 @@ Para establecer la cantidad de threads con los queremos trabajar deben ser setea
 # ╟─eac45039-d95f-43d5-a8aa-608cc88139a4
 # ╠═0e6fde21-edb0-4477-ae57-503526399ac1
 # ╠═a638cf30-0d88-43b2-94a7-ebe242419b49
+# ╠═9faeb00d-f9eb-4de9-9408-48c1b17db90a
+# ╠═a15c6358-6eef-4167-a150-f7f8d8753f70
+# ╠═9cbdd65f-9593-4426-996e-fa8427a8439f
 # ╟─6a6aa62c-67e5-4b84-a53a-20c22835999e
 # ╟─ba8dc280-af56-454f-bdab-584e5eb3a217
 # ╠═252fac58-0db3-4ab5-a424-6d05bda4ab3f
+# ╟─33aa5024-bf95-4301-89ab-da943a17acf4
 # ╠═9efcca26-6b12-451c-b544-941c8990ff97
 # ╟─51a35185-568a-41eb-ab65-8829d41c5bd7
 # ╠═2e85a4f6-faff-44c8-8546-eb8576b1b2c7
 # ╠═444e2a32-b51e-4c95-b24f-1f2d82a89a6f
+# ╠═3804212c-5fc6-4019-a9d1-c50bb6a44553
