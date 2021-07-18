@@ -20,11 +20,11 @@
 
 Link al video de youtube en el cual se explica toda la investigación realizada: https://youtu.be/mwYdWx4ukYg
 
-## Material utilizado para
+## Material utilizado para el trabajo 
 
 Link al drive con las presentaciones utilizadas: https://drive.google.com/drive/folders/1mYrVG9R4HJRrn4Y9p8Ma2dksrEIK4Ym-?usp=sharing
 
-El trabajo práctico se encuentra dividido en dos carpetas:
+El repositorio de github se encuentra dividido en dos carpetas:
 - **Contenido_Teorico**: En el cual se encuentra todo lo relacionado con los contenidos básicos de Julia como lo son (Historia, sintaxis, etc).
 - **Contenido_Practico**: En el cual se aplican los contenidos vistos en la parte teórica y se utilizan herramientas que demuestran lo beneficioso que es utilizar Julia para los distintos enfoques que el usuario necesita.
 
